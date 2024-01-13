@@ -5,7 +5,7 @@ const Menu = () => {
   const navigation = useNavigate();
   return (
     <header className="header sticky top-0 bg-white shadow-md flex items-center justify-between px-10 py-02 z-10">
-      <img src="/logo.jpeg" className="h-12 p-1" alt="logo" />
+      <img src="/logo.png" className="h-12 p-1" alt="logo" />
 
       <nav className="nav font-semibold text-lg">
         <ul className="flex items-center justify-center ">
