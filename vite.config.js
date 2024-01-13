@@ -16,6 +16,7 @@ export default defineConfig({
       "@helpers": path.resolve(__dirname, "./src/helpers/"),
       "@context": path.resolve(__dirname, "./src/context/"),
       "@reducers": path.resolve(__dirname, "./src/reducers/"),
+      "@components": path.resolve(__dirname, "./src/components/"),
     },
   },
 });

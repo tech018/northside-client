@@ -22,7 +22,7 @@ const Footer = () => {
     },
   ];
   return (
-    <div className="text-center">
+    <div className="text-center mb-10">
       <div className="flex flex-nowrap item-center justify-center gap-3 cursor-pointer">
         {footer.map((i) => (
           <span className="uppercase" key={i.id}>
