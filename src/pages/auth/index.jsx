@@ -109,10 +109,10 @@ export default function Login() {
 
   return (
     <Public>
-      <div className="flex min-h-full flex-1 flex-col justify-center px-12 py-12 lg:px-8 mt-10 md:mt-5">
+      <div className="flex min-h-full flex-1 flex-col justify-center px-12 py-12 lg:px-8 mt-8 md:mt-5">
         <div className="mt-10  rounded-sm sm:mx-auto sm:w-full sm:max-w-sm">
           <form
-            className="border-2 border-solid  rounded-lg border-stone-300 py-8 px-8 space-y-6 drop-shadow-md"
+            className="rounded-sm border-stone-300 py-8 px-8 space-y-6 shadow-2xl "
             onSubmit={handleSubmit(onSumit)}
           >
             <AppInput
