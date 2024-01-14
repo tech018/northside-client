@@ -10,11 +10,11 @@ const Menu = () => {
       <nav className="nav font-semibold text-lg">
         <ul className="flex items-center justify-center ">
           {menus
-            .filter((i) => i.name !== "Login")
+            .filter((i) => i.topmenu !== false)
             .map((item) => (
               <li
                 key={item.name}
-                className="text-xs mx-3 mt-1 border-b-2 border-green-500 border-opacity-0  duration-200 cursor-pointer  hover:border-opacity-100 hover:text-green-500"
+                className="text-sm uppercase mx-3 mt-1 border-b-2 border-green-500 border-opacity-0  duration-200 cursor-pointer  hover:border-opacity-100 hover:text-green-500"
               >
                 <Link to={`${item.path}`} className="inline-flex gap-1">
                   {item.icon}
