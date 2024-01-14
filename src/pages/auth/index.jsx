@@ -26,8 +26,6 @@ const LOGIN_USER = gql`
         token
         id
       }
-      message
-      code
     }
   }
 `;

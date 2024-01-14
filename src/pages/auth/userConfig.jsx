@@ -6,8 +6,36 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect } from "react";
 import AppButton from "@components/button";
 import { profileConfigSchema } from "../../schema/login";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { gql, useMutation } from "@apollo/client";
+
+const CONFIG_USER = gql`
+  mutation ($newConfig: NewConfig) {
+    configProfile(newConfig: $newConfig) {
+      code
+      message
+      redirectURL
+    }
+  }
+`;
 
 const UserConfig = () => {
+  const [searchParams] = useSearchParams();
+  const userid = searchParams.get("id"); // "testCode"
+  const navigate = useNavigate();
+  const [configUser] = useMutation(CONFIG_USER, {
+    context: {
+      headers: {
+        authorization: window.localStorage.getItem("accessToken"),
+      },
+    },
+    onCompleted: (data) => {
+      navigate(`/${data?.configProfile?.redirectURL}`);
+    },
+    onError: (error) => {
+      console.error("Login error:", error);
+    },
+  });
   const {
     handleSubmit,
     control,
@@ -25,7 +53,7 @@ const UserConfig = () => {
   });
 
   const enablePassword = watch("enablepass");
-  console.log("enablePassword", enablePassword);
+
   const { user } = useAppStore((state) => ({
     user: state.user,
   }));
@@ -35,7 +63,16 @@ const UserConfig = () => {
   }, [setValue, user]);
 
   const onSubmit = (data) => {
-    console.log(data);
+    configUser({
+      variables: {
+        newConfig: {
+          mobile: data.mobile,
+          address: data.address,
+          password: data.password,
+          id: Number(userid),
+        },
+      },
+    });
   };
   return (
     <Public>
