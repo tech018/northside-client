@@ -24,6 +24,7 @@ const LOGIN_USER = gql`
         name
         photoURL
         token
+        id
       }
       message
       code
@@ -44,7 +45,9 @@ export default function Login() {
     },
     onCompleted: (data) => {
       updateAuth(data?.googleAuth?.credentials);
-      navigate(`/${data?.googleAuth?.redirectURL}`);
+      navigate(
+        `/${data?.googleAuth?.redirectURL}?id=${data?.googleAuth?.credentials?.id}`
+      );
     },
     onError: (error) => {
       console.error("Login error:", error);
@@ -67,6 +70,7 @@ export default function Login() {
     firebase.auth().onAuthStateChanged((userCred) => {
       if (userCred) {
         userCred.getIdTokenResult().then((res) => {
+          console.log("userCred", userCred);
           if (res) {
             window.localStorage.setItem("accessToken", res.token);
           }
@@ -80,6 +84,7 @@ export default function Login() {
       .auth()
       .signInWithPopup(new firebase.auth.GoogleAuthProvider())
       .then((userCred) => {
+        console.log("userInfo", userCred);
         if (userCred) {
           loginUser({
             variables: {
