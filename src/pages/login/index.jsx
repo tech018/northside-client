@@ -9,7 +9,48 @@ import AppInput from "@components/inputs";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "@schema/login";
+import { gql, useMutation } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
+
+const LOGIN_USER = gql`
+  mutation ($authUser: GoogleAuth) {
+    googleAuth(authUser: $authUser) {
+      code
+      message
+      redirectURL
+      credentials {
+        email
+        mobile
+        name
+        photoURL
+        token
+      }
+      message
+      code
+    }
+  }
+`;
+
 export default function Login() {
+  const navigate = useNavigate();
+  const [loginUser, { loading, error }] = useMutation(LOGIN_USER, {
+    context: {
+      headers: {
+        authorization: window.localStorage.getItem("accessToken"),
+      },
+    },
+    onSubmit: () => {
+      // setLoading(loading);
+    },
+    onCompleted: (data) => {
+      navigate(`/${data.googleAuth.redirectURL}`);
+    },
+    onError: (error) => {
+      // Handle errors
+      console.error("Login error:", error);
+    },
+  });
+
   const {
     handleSubmit,
     control,
@@ -22,20 +63,12 @@ export default function Login() {
     },
   });
 
-  const [auth, setAuth] = useState(
-    false || window.localStorage.getItem("auth")
-  );
-  const [token, setToken] = useState(null);
-
   useEffect(() => {
     firebase.auth().onAuthStateChanged((userCred) => {
       if (userCred) {
-        setAuth(true);
-        userCred.getIdTokenResult().then((token) => {
-          if (token) {
-            window.localStorage.setItem("auth", "true");
-            setToken(token);
-            console.log(token);
+        userCred.getIdTokenResult().then((res) => {
+          if (res) {
+            window.localStorage.setItem("accessToken", res.token);
           }
         });
       }
@@ -48,7 +81,16 @@ export default function Login() {
       .signInWithPopup(new firebase.auth.GoogleAuthProvider())
       .then((userCred) => {
         if (userCred) {
-          setAuth(true);
+          loginUser({
+            variables: {
+              authUser: {
+                name: userCred.user.displayName,
+                email: userCred.user.email,
+                photoURL: userCred.user.photoURL,
+                mobile: userCred.user.phoneNumber,
+              },
+            },
+          });
         }
       })
       .catch((err) => {
@@ -92,7 +134,7 @@ export default function Login() {
               <span>or</span>
               <AppButton
                 label="Sign in with"
-                type="submit"
+                type="button"
                 variant="withicon"
                 handlePress={SignInWithGoogle}
                 icon={AppIcons["google"]}
