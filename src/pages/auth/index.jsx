@@ -1,5 +1,6 @@
 import firebase from "firebase/app";
 import "firebase/auth";
+import { useEffect } from "react";
 import AppButton from "@components/button";
 import Public from "@layouts/Public";
 import AppIcons from "@constants/icons";
@@ -7,16 +8,22 @@ import AppInput from "@components/inputs";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "@schema/login";
-import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
+import useAppStore from "@store";
 
-const GET_USER = gql`
-  query GetUser($email: String) {
-    getUser(email: $email) {
-      user {
+const LOGIN_USER = gql`
+  mutation ($authUser: GoogleAuth) {
+    googleAuth(authUser: $authUser) {
+      code
+      message
+      redirectURL
+      credentials {
         email
+        mobile
         name
+        photoURL
+        token
         id
       }
       message
@@ -26,9 +33,25 @@ const GET_USER = gql`
 `;
 
 export default function Login() {
-  const [email, setEmail] = useState("sojda018@gmail.com");
-  const { loading, error, data } = useQuery(GET_USER, {
-    variables: { email },
+  const { updateAuth } = useAppStore((state) => ({
+    updateAuth: state.updateAuth,
+  }));
+  const navigate = useNavigate();
+  const [loginUser] = useMutation(LOGIN_USER, {
+    context: {
+      headers: {
+        authorization: window.localStorage.getItem("accessToken"),
+      },
+    },
+    onCompleted: (data) => {
+      updateAuth(data?.googleAuth?.credentials);
+      navigate(
+        `/${data?.googleAuth?.redirectURL}?id=${data?.googleAuth?.credentials?.id}`
+      );
+    },
+    onError: (error) => {
+      console.error("Login error:", error);
+    },
   });
 
   const {
@@ -46,10 +69,10 @@ export default function Login() {
   useEffect(() => {
     firebase.auth().onAuthStateChanged((userCred) => {
       if (userCred) {
-        userCred.getIdTokenResult().then((token) => {
-          if (token) {
-            window.localStorage.setItem("token", JSON.stringify(token));
-            console.log(token);
+        userCred.getIdTokenResult().then((res) => {
+          console.log("userCred", userCred);
+          if (res) {
+            window.localStorage.setItem("accessToken", res.token);
           }
         });
       }
@@ -61,8 +84,18 @@ export default function Login() {
       .auth()
       .signInWithPopup(new firebase.auth.GoogleAuthProvider())
       .then((userCred) => {
+        console.log("userInfo", userCred);
         if (userCred) {
-          console.log("userCred", userCred.user.email);
+          loginUser({
+            variables: {
+              authUser: {
+                name: userCred.user.displayName,
+                email: userCred.user.email,
+                photoURL: userCred.user.photoURL,
+                mobile: userCred.user.phoneNumber,
+              },
+            },
+          });
         }
       })
       .catch((err) => {
@@ -76,14 +109,10 @@ export default function Login() {
 
   return (
     <Public>
-      <div className="flex min-h-full flex-1 flex-col justify-center px-12 py-12 lg:px-8 mt-10 md:mt-5">
+      <div className="flex min-h-full flex-1 flex-col justify-center px-12 py-12 lg:px-8 mt-8 md:mt-5">
         <div className="mt-10  rounded-sm sm:mx-auto sm:w-full sm:max-w-sm">
           <form
-            style={{
-              border: "1px solid rgba(0, 0, 0, 0.518)",
-              borderRadius: "6px",
-            }}
-            className="border-solid  rounded-sm border-stone-600 py-8 px-8 space-y-6 drop-shadow-sm"
+            className="rounded-sm border-stone-300 py-8 px-8 space-y-6 shadow-2xl"
             onSubmit={handleSubmit(onSumit)}
           >
             <AppInput

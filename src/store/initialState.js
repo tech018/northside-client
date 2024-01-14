@@ -3,14 +3,7 @@ const initialState = {
   products: [],
   loadingProducts: false,
   size: "S",
-  auth: {
-    user: {
-      displayName: null,
-      email: null,
-      photUrl: null,
-      phoneNumber: null,
-    },
-  },
+  user: null,
 };
 
 export default initialState;

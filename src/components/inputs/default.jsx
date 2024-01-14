@@ -19,7 +19,7 @@ export default function DefaultInput({ label, name, type, control, error }) {
               onChange={onChange}
               onBlur={onBlur}
               type={type}
-              className={`block w-full px-2 rounded-sm border-0 focus:outline-none py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-gray-800 sm:text-sm sm:leading-6`}
+              className="w-full px-4 py-2 text-base border border-gray-300 rounded outline-none focus:ring-slate-500 focus:border-slate-500 focus:ring-1"
             />
             {error[name] && (
               <span className="text-sm text-red-600">

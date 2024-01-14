@@ -1,6 +1,6 @@
 import { menus } from "@constants/menu";
-
 import { Link, useNavigate } from "react-router-dom";
+
 const Menu = () => {
   const navigation = useNavigate();
   return (
@@ -10,14 +10,13 @@ const Menu = () => {
       <nav className="nav font-semibold text-lg">
         <ul className="flex items-center justify-center ">
           {menus
-            .filter((i) => i.topmenu !== false)
+            .filter((i) => i.topMenu !== false)
             .map((item) => (
               <li
                 key={item.name}
                 className="text-sm uppercase mx-3 mt-1 border-b-2 border-green-500 border-opacity-0  duration-200 cursor-pointer  hover:border-opacity-100 hover:text-green-500"
               >
                 <Link to={`${item.path}`} className="inline-flex gap-1">
-                  {item.icon}
                   {item.name}
                 </Link>
               </li>

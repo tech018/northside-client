@@ -49,11 +49,13 @@ ProductList.propTypes = {
       price: PropTypes.number.isRequired,
       sizes: PropTypes.string.isRequired,
       slug: PropTypes.string.isRequired,
-      ProductImages: PropTypes.shape({
-        name: PropTypes.string.isRequired,
-        defaultImage: PropTypes.bool.isRequired,
-        ProductImageId: PropTypes.number.isRequired,
-      }),
+      ProductImages: PropTypes.arrayOf(
+        PropTypes.shape({
+          name: PropTypes.string.isRequired,
+          defaultImage: PropTypes.bool.isRequired,
+          ProductImageId: PropTypes.number.isRequired,
+        })
+      ),
     })
   ).isRequired,
   loading: PropTypes.bool.isRequired,

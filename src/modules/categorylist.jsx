@@ -11,8 +11,7 @@ import {
   Squares2X2Icon,
 } from "@heroicons/react/20/solid";
 import ProductList from "@modules/productList";
-import useIncrementContext from "../hooks/useProductContext";
-import ProductsTypes from "../reducers/types";
+import useAppStore from "@store";
 
 const sortOptions = [
   { name: "Most Popular", href: "#", current: true },
@@ -94,22 +93,25 @@ const GET_PRODUCTS = gql`
 `;
 
 export default function CategoryList() {
-  const { state, dispatch } = useIncrementContext();
-  const { products, loadingProducts } = state;
+  const { updateProducts, products, loadingProducts, filterProductItems } =
+    useAppStore((state) => ({
+      updateProducts: state.updateProducts,
+      products: state.products,
+      loadingProducts: state.loadingProducts,
+      filterProductItems: state.filterProductItems,
+    }));
+
   const { loading, error, data } = useQuery(GET_PRODUCTS, {
     variables: { page: 1, pageSize: 10 },
   });
 
   useEffect(() => {
-    dispatch({
-      type: ProductsTypes.GET_PRODUCT,
-      payload: {
-        loading,
-        data: data?.getProducts?.data ? data?.getProducts?.data : [],
-        error,
-      },
+    updateProducts({
+      loading,
+      data: data?.getProducts?.data ? data?.getProducts?.data : [],
+      error,
     });
-  }, [data, dispatch, loading, error]);
+  }, [data, error, loading, updateProducts]);
 
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
@@ -123,10 +125,7 @@ export default function CategoryList() {
       const filtered = data?.getProducts?.data.filter(
         (item) => item[filterKey] === filter
       );
-      return dispatch({
-        type: ProductsTypes.FILTER_PRODUCTS,
-        payload: filtered,
-      });
+      filterProductItems(filtered);
     }
   };
 

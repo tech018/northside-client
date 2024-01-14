@@ -18,6 +18,7 @@ export default defineConfig({
       "@reducers": path.resolve(__dirname, "./src/reducers/"),
       "@components": path.resolve(__dirname, "./src/components/"),
       "@schema": path.resolve(__dirname, "./src/schema/"),
+      "@store": path.resolve(__dirname, "./src/store/"),
     },
   },
 });
