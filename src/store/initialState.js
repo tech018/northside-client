@@ -3,6 +3,7 @@ const initialState = {
   products: [],
   loadingProducts: false,
   size: "S",
+  user: null,
 };
 
 export default initialState;

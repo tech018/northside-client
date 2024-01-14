@@ -1,7 +1,6 @@
 import firebase from "firebase/app";
 import "firebase/auth";
 import { useEffect } from "react";
-import { useState } from "react";
 import AppButton from "@components/button";
 import Public from "@layouts/Public";
 import AppIcons from "@constants/icons";
@@ -11,6 +10,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "@schema/login";
 import { gql, useMutation } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
+import useAppStore from "@store";
 
 const LOGIN_USER = gql`
   mutation ($authUser: GoogleAuth) {
@@ -32,21 +32,21 @@ const LOGIN_USER = gql`
 `;
 
 export default function Login() {
+  const { updateAuth } = useAppStore((state) => ({
+    updateAuth: state.updateAuth,
+  }));
   const navigate = useNavigate();
-  const [loginUser, { loading, error }] = useMutation(LOGIN_USER, {
+  const [loginUser] = useMutation(LOGIN_USER, {
     context: {
       headers: {
         authorization: window.localStorage.getItem("accessToken"),
       },
     },
-    onSubmit: () => {
-      // setLoading(loading);
-    },
     onCompleted: (data) => {
-      navigate(`/${data.googleAuth.redirectURL}`);
+      updateAuth(data?.googleAuth?.credentials);
+      navigate(`/${data?.googleAuth?.redirectURL}`);
     },
     onError: (error) => {
-      // Handle errors
       console.error("Login error:", error);
     },
   });
@@ -94,7 +94,6 @@ export default function Login() {
         }
       })
       .catch((err) => {
-        setAuth(false);
         console.log("error login with google", err);
       });
   };

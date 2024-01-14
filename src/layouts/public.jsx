@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 const Public = ({ children }) => {
   return (
-    <div>
+    <div className="w-full">
       <Menu />
       {children}
       <Footer />
