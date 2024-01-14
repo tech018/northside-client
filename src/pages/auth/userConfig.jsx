@@ -40,14 +40,7 @@ const UserConfig = () => {
   return (
     <Public>
       <div className="mt-20 mb-20 w-1/2 m-auto shadow-md">
-        {/* <div className="w-3/12 bg-red-400 ">
-          <img
-            className="inline-block h-20 w-20 rounded-full  mx-16 my-10 ring-2 ring-white "
-            src={user?.photoURL}
-            alt=""
-          />
-        </div> */}
-        <div className="w-full bg-slate-100 shadow-lg p-10 divide-y divide-dashed divide-y-2 divide-slate-400">
+        <div className="w-full bg-slate-100 shadow-lg p-10 divide-y divide-dashed divide-y-1 divide-slate-400">
           <h2 className="text-slate-500 mb-2 text-center">
             Profile Confirmation
           </h2>

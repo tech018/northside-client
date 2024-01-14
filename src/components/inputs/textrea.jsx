@@ -34,6 +34,6 @@ export default TextArea;
 TextArea.propTypes = {
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  control: PropTypes.func.isRequired,
+  control: PropTypes.object.isRequired,
   error: PropTypes.object.isRequired,
 };
