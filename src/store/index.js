@@ -3,11 +3,6 @@ import initialState from "./initialState";
 
 const useAppStore = create((set) => ({
   ...initialState,
-  updateAuth: (param) =>
-    set((state) => ({
-      ...state,
-      user: param,
-    })),
   updateProducts: (param) =>
     set((state) => ({
       ...state,
@@ -18,6 +13,11 @@ const useAppStore = create((set) => ({
     set((state) => ({
       ...state,
       products: param,
+    })),
+  authUser: (params) =>
+    set((state) => ({
+      ...state,
+      user: params,
     })),
 }));
 

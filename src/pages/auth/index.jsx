@@ -1,6 +1,6 @@
 import firebase from "firebase/app";
 import "firebase/auth";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AppButton from "@components/button";
 import Public from "@layouts/Public";
 import AppIcons from "@constants/icons";
@@ -31,8 +31,9 @@ const LOGIN_USER = gql`
 `;
 
 export default function Login() {
-  const { updateAuth } = useAppStore((state) => ({
-    updateAuth: state.updateAuth,
+  const [postVariables, getPostVariables] = useState(null);
+  const { authUser } = useAppStore((state) => ({
+    authUser: state.authUser,
   }));
   const navigate = useNavigate();
   const [loginUser] = useMutation(LOGIN_USER, {
@@ -42,15 +43,27 @@ export default function Login() {
       },
     },
     onCompleted: (data) => {
-      updateAuth(data?.googleAuth?.credentials);
-      navigate(
-        `/${data?.googleAuth?.redirectURL}?id=${data?.googleAuth?.credentials?.id}`
-      );
+      authUser(data?.googleAuth?.credentials);
+
+      if (data?.googleAuth?.code === 200) {
+        return navigate(
+          `/${data?.googleAuth?.redirectURL}?id=${data?.googleAuth?.credentials?.id}`
+        );
+      }
     },
     onError: (error) => {
-      console.error("Login error:", error);
+      navigate("/pageError");
+      console.log("error", error);
     },
   });
+
+  const sendRequestFunction = useCallback(() => {
+    loginUser({
+      variables: {
+        ...postVariables,
+      },
+    });
+  }, [loginUser, postVariables]);
 
   const {
     handleSubmit,
@@ -67,31 +80,33 @@ export default function Login() {
   useEffect(() => {
     firebase.auth().onAuthStateChanged((userCred) => {
       if (userCred) {
-        userCred.getIdTokenResult().then((res) => {
-          console.log("userCred", userCred);
-          if (res) {
-            window.localStorage.setItem("accessToken", res.token);
-          }
-        });
+        userCred
+          .getIdTokenResult()
+          .then((res) => {
+            if (res) {
+              window.localStorage.setItem("accessToken", res.token);
+              if (res.token) {
+                sendRequestFunction(res.token);
+              }
+            }
+          })
+          .catch((err) => console.log("token error", err));
       }
     });
-  }, []);
+  }, [sendRequestFunction]);
 
   const SignInWithGoogle = () => {
     firebase
       .auth()
       .signInWithPopup(new firebase.auth.GoogleAuthProvider())
       .then((userCred) => {
-        console.log("userInfo", userCred);
         if (userCred) {
-          loginUser({
-            variables: {
-              authUser: {
-                name: userCred.user.displayName,
-                email: userCred.user.email,
-                photoURL: userCred.user.photoURL,
-                mobile: userCred.user.phoneNumber,
-              },
+          getPostVariables({
+            authUser: {
+              name: userCred.user.displayName,
+              email: userCred.user.email,
+              photoURL: userCred.user.photoURL,
+              mobile: userCred.user.phoneNumber,
             },
           });
         }

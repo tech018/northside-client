@@ -3,6 +3,8 @@ import Feedbacks from "@pages/feedbacks";
 import UploadImage from "@pages/dashboard/upload";
 import Login from "@pages/auth";
 import UserConfig from "@pages/auth/userConfig";
+import Dashboard from "@pages/dashboard";
+import SingleProduct from "../pages/product/singleProduct";
 
 export const menus = [
   {
@@ -30,9 +32,21 @@ export const menus = [
     topMenu: true,
   },
   {
+    name: "Dashboard",
+    path: "/dashboard",
+    element: <Dashboard />,
+    topMenu: true,
+  },
+  {
     name: "User Config",
     path: "/auth/userConfig",
     element: <UserConfig />,
     topMenu: false,
+  },
+  {
+    name: "Single Product",
+    path: "/product",
+    element: <SingleProduct />,
+    topMenu: true,
   },
 ];
