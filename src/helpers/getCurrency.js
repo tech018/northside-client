@@ -11,3 +11,19 @@ export const getCurrency = () => {
   const currencySymbol = numberFormat.format(0).replace(/[0-9.,\s]/g, "");
   return currencySymbol;
 };
+
+export const calculateRating = (ratings) => {
+  if (ratings?.length === 0) {
+    return 0;
+  }
+
+  const sum = ratings?.reduce((total, item) => total + item.rating, 0);
+  return sum / ratings?.length;
+};
+
+export function limitText(text, maxLength) {
+  if (text.length > maxLength) {
+    return text.slice(0, maxLength) + "...";
+  }
+  return text;
+}

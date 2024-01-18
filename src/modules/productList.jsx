@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
-import Skeleton from "../components/loader/skelen";
+import Skeleton from "@components/loader/skelen";
+import { limitText } from "@helpers/getCurrency";
 
 const ProductList = ({ data, loading }) => {
   if (loading) return <Skeleton />;
@@ -25,7 +26,7 @@ const ProductList = ({ data, loading }) => {
                 {" "}
                 <h3 className="mt-4 text-sm text-current">{product.name}</h3>
                 <p className="mt-1 text-sm font-medium text-slate-600">
-                  {product.description}
+                  {limitText(product.description, 45)}
                 </p>
                 <p className="mt-1 text-sm font-medium text-slate-500">
                   ₱{product.price.toFixed(2)}

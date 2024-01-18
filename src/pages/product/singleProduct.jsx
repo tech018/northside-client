@@ -4,6 +4,7 @@ import { StarIcon } from "@heroicons/react/20/solid";
 import { RadioGroup } from "@headlessui/react";
 import { gql, useQuery } from "@apollo/client";
 import { useSearchParams } from "react-router-dom";
+import { calculateRating } from "../../helpers/getCurrency";
 
 const product = {
   name: "Basic Tee 6-Pack",
@@ -172,7 +173,9 @@ export default function SingleProduct() {
                       <StarIcon
                         key={rating}
                         className={classNames(
-                          reviews.average > rating
+                          calculateRating(
+                            data?.getProduct?.product?.ProductReviews
+                          ) > rating
                             ? "text-gray-900"
                             : "text-gray-200",
                           "h-5 w-5 flex-shrink-0"
@@ -181,12 +184,12 @@ export default function SingleProduct() {
                       />
                     ))}
                   </div>
-                  <p className="sr-only">{reviews.average} out of 5 stars</p>
+
                   <a
                     href={reviews.href}
                     className="ml-3 text-sm font-medium text-indigo-600 hover:text-indigo-500"
                   >
-                    {reviews.totalCount} reviews
+                    {data?.getProduct?.product?.ProductReviews?.length} reviews
                   </a>
                 </div>
               </div>
