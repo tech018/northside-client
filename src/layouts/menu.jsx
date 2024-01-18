@@ -9,6 +9,14 @@ const Menu = () => {
     user: state.user,
   }));
 
+  const filteredMenu = menus.filter((i) => {
+    if (user === null) {
+      return !i.auth;
+    } else {
+      return i;
+    }
+  });
+
   const navigation = useNavigate();
   return (
     <header className="header sticky top-0 bg-white shadow-md flex items-center justify-between px-10 py-02 z-10">
@@ -16,7 +24,7 @@ const Menu = () => {
 
       <nav className="nav font-semibold text-lg">
         <ul className="flex items-center justify-center ">
-          {menus
+          {filteredMenu
             .filter((i) => i.topMenu !== false)
             .map((item) => (
               <li

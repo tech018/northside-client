@@ -2,6 +2,8 @@ import Public from "@layouts/Public";
 import { useState } from "react";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { RadioGroup } from "@headlessui/react";
+import { gql, useQuery } from "@apollo/client";
+import { useSearchParams } from "react-router-dom";
 
 const product = {
   name: "Basic Tee 6-Pack",
@@ -61,7 +63,44 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
+const GET_PRODUCT = gql`
+  query GetProduct($productId: Int) {
+    getProduct(productId: $productId) {
+      code
+      message
+      product {
+        category
+        name
+        id
+        price
+        slug
+        description
+        discounted
+        sizes
+        percentDiscount
+        ProductReviews {
+          productId
+          rating
+          commenter
+        }
+        ProductImages {
+          defaultImage
+          name
+        }
+      }
+    }
+  }
+`;
+
 export default function SingleProduct() {
+  const [searchParams] = useSearchParams();
+  const productId = searchParams.get("id");
+  console.log("productId", productId);
+  const { loading, error, data } = useQuery(GET_PRODUCT, {
+    variables: { productId: Number(productId) },
+  });
+
+  console.log("product data", data);
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
   const [selectedSize, setSelectedSize] = useState(product.sizes[2]);
 
@@ -109,45 +148,11 @@ export default function SingleProduct() {
             </ol>
           </nav>
 
-          {/* Image gallery */}
-          <div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8">
-            <div className="aspect-h-4 aspect-w-3 hidden overflow-hidden rounded-lg lg:block">
-              <img
-                src={product.images[0].src}
-                alt={product.images[0].alt}
-                className="h-full w-full object-cover object-center"
-              />
-            </div>
-            <div className="hidden lg:grid lg:grid-cols-1 lg:gap-y-8">
-              <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
-                <img
-                  src={product.images[1].src}
-                  alt={product.images[1].alt}
-                  className="h-full w-full object-cover object-center"
-                />
-              </div>
-              <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
-                <img
-                  src={product.images[2].src}
-                  alt={product.images[2].alt}
-                  className="h-full w-full object-cover object-center"
-                />
-              </div>
-            </div>
-            <div className="aspect-h-5 aspect-w-4 lg:aspect-h-4 lg:aspect-w-3 sm:overflow-hidden sm:rounded-lg">
-              <img
-                src={product.images[3].src}
-                alt={product.images[3].alt}
-                className="h-full w-full object-cover object-center"
-              />
-            </div>
-          </div>
-
           {/* Product info */}
           <div className="mx-auto max-w-2xl px-4 pb-16 pt-10 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8 lg:px-8 lg:pb-24 lg:pt-16">
             <div className="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
               <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-                {product.name}
+                {data?.getProduct?.product?.name}
               </h1>
             </div>
 
@@ -155,7 +160,7 @@ export default function SingleProduct() {
             <div className="mt-4 lg:row-span-3 lg:mt-0">
               <h2 className="sr-only">Product information</h2>
               <p className="text-3xl tracking-tight text-gray-900">
-                {product.price}
+                PHP {data?.getProduct?.product?.price}
               </p>
 
               {/* Reviews */}
@@ -321,37 +326,49 @@ export default function SingleProduct() {
 
             <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pb-16 lg:pr-8 lg:pt-6">
               {/* Description and details */}
-              <div>
-                <h3 className="sr-only">Description</h3>
+              <div className="inline-flex ">
+                {data?.getProduct?.product?.ProductImages.map((item) => {
+                  if (item.defaultImage)
+                    return (
+                      <div className="max-w-80">
+                        <div className="">
+                          <img
+                            src={item.name}
+                            alt={item.name}
+                            className="h-full w-full object-cover object-center"
+                          />
+                        </div>
+                      </div>
+                    );
+                  return null;
+                })}
 
-                <div className="space-y-6">
-                  <p className="text-base text-gray-900">
-                    {product.description}
-                  </p>
-                </div>
-              </div>
+                <div className="mx-10">
+                  <h3 className="sr-only">Description</h3>
 
-              <div className="mt-10">
-                <h3 className="text-sm font-medium text-gray-900">
-                  Highlights
-                </h3>
+                  <div className="space-y-6">
+                    <p className="text-base text-gray-900">
+                      {data?.getProduct?.product?.description}
+                    </p>
+                  </div>
+                  <div className="mt-10">
+                    <h3 className="text-sm font-medium text-gray-900">
+                      Highlights
+                    </h3>
 
-                <div className="mt-4">
-                  <ul role="list" className="list-disc space-y-2 pl-4 text-sm">
-                    {product.highlights.map((highlight) => (
-                      <li key={highlight} className="text-gray-400">
-                        <span className="text-gray-600">{highlight}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              <div className="mt-10">
-                <h2 className="text-sm font-medium text-gray-900">Details</h2>
-
-                <div className="mt-4 space-y-6">
-                  <p className="text-sm text-gray-600">{product.details}</p>
+                    <div className="mt-4">
+                      <ul
+                        role="list"
+                        className="list-disc space-y-2 pl-4 text-sm"
+                      >
+                        {product.highlights.map((highlight) => (
+                          <li key={highlight} className="text-gray-400">
+                            <span className="text-gray-600">{highlight}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
