@@ -47,7 +47,7 @@ export default function Login() {
 
       if (data?.googleAuth?.code === 200) {
         return navigate(
-          `/${data?.googleAuth?.redirectURL}?id=${data?.googleAuth?.credentials?.id}`
+          `/auth/${data?.googleAuth?.redirectURL}?id=${data?.googleAuth?.credentials?.id}`
         );
       }
     },

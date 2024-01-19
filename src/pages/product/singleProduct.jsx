@@ -4,7 +4,8 @@ import { StarIcon } from "@heroicons/react/20/solid";
 import { RadioGroup } from "@headlessui/react";
 import { gql, useQuery } from "@apollo/client";
 import { useSearchParams } from "react-router-dom";
-import { calculateRating } from "../../helpers/getCurrency";
+import { calculateRating } from "@helpers/getCurrency";
+import Carousel from "../../components/carousel";
 
 const product = {
   name: "Basic Tee 6-Pack",
@@ -326,30 +327,17 @@ export default function SingleProduct() {
                 </button>
               </form>
             </div>
-
-            <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pb-16 lg:pr-8 lg:pt-6">
-              {/* Description and details */}
-              <div className="inline-flex ">
-                {data?.getProduct?.product?.ProductImages.map((item) => {
-                  if (item.defaultImage)
-                    return (
-                      <div className="max-w-80">
-                        <div className="">
-                          <img
-                            src={item.name}
-                            alt={item.name}
-                            className="h-full w-full object-cover object-center"
-                          />
-                        </div>
-                      </div>
-                    );
-                  return null;
-                })}
-
-                <div className="mx-10">
+            <div className="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8 ">
+              {" "}
+              <div className="flex justify-center">
+                <Carousel
+                  variant="default"
+                  data={data?.getProduct?.product?.ProductImages}
+                />
+                <div className="mx-10 w-full h-full">
                   <h3 className="sr-only">Description</h3>
 
-                  <div className="space-y-6">
+                  <div>
                     <p className="text-base text-gray-900">
                       {data?.getProduct?.product?.description}
                     </p>

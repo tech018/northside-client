@@ -37,7 +37,7 @@ export const menus = [
   },
   {
     name: "Dashboard",
-    path: "/dashboard",
+    path: "/auth/dashboard",
     element: <Dashboard />,
     topMenu: true,
     auth: true,
