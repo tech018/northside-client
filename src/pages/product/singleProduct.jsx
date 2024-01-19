@@ -169,14 +169,14 @@ export default function SingleProduct() {
                 <h3 className="sr-only">Reviews</h3>
                 <div className="flex items-center">
                   <div className="flex items-center">
-                    {[0, 1, 2, 3, 4].map((rating) => (
+                    {[...Array(5).keys()].map((rating) => (
                       <StarIcon
                         key={rating}
                         className={classNames(
                           calculateRating(
                             data?.getProduct?.product?.ProductReviews
                           ) > rating
-                            ? "text-gray-900"
+                            ? "text-yellow-400"
                             : "text-gray-200",
                           "h-5 w-5 flex-shrink-0"
                         )}
